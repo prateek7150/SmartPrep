@@ -1,0 +1,24 @@
+# --- Root Level ---
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# --- Frontend (Client) ---
+client/node_modules/
+client/dist/
+client/build/
+client/.env
+client/.env.local
+client/*.log
+
+# --- Backend (Server) ---
+server/node_modules/
+server/.env
+server/*.log
+server/debug.log
+
+# --- Misc ---
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*

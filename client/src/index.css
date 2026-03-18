@@ -1,0 +1,12 @@
+@import "tailwindcss";
+
+@layer base {
+  html, body, #root {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    /* This ensures our new professional font is the default everywhere */
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    @apply antialiased text-slate-900;
+  }
+}
