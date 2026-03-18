@@ -9,17 +9,19 @@ const interviewRoutes = require('./routes/interviewRoutes');
 const app = express();
 
 const allowedOrigins = [
-  'http://localhost:5173',                  
+  'http://localhost:5173',                   
   'https://smart-prep-rouge.vercel.app',     
   process.env.FRONTEND_URL                   
 ].filter(Boolean);
 
 app.use(cors({
   origin: function (origin, callback) {
-    
     if (!origin) return callback(null, true);
     
-    if (allowedOrigins.includes(origin)) {
+    const isAllowed = allowedOrigins.includes(origin) || 
+                     origin.endsWith('.vercel.app');
+
+    if (isAllowed) {
       return callback(null, true);
     } else {
       console.log("CORS Blocked Origin:", origin);
@@ -46,7 +48,6 @@ mongoose.connect(process.env.MONGO_URI)
     console.error(" Failed to connect to MongoDB:", err.message);
     process.exit(1); 
   });
-
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, '0.0.0.0', () => { 
