@@ -3,6 +3,7 @@ import axios from 'axios';
 import * as pdfjsLib from 'pdfjs-dist';
 import { AuthContext } from './context/AuthContext';
 import backgroundImage from './assets/background.jpg'; 
+import dashboardImage from './assets/dashboard.jpg'; 
 import './App.css'; 
 import { 
   Sparkles, Send, ChevronRight, Clock, BarChart3, LogOut, 
@@ -172,7 +173,7 @@ function App() {
   }
 
   return (
-    <div className="flex h-screen bg-[#F8FAFC] text-slate-900 font-sans overflow-hidden print:h-auto print:overflow-visible">
+    <div className="flex h-screen bg-[#F8FAFC] text-slate-900 font-sans overflow-hidden print:h-auto print:overflow-visible bg-cover bg-center" style={{ backgroundImage: `url(${dashboardImage})` }}>
       {/* Hidden Print Report */}
       <div className="hidden print:block print:p-10 print:w-full print:bg-white">
           <h1 className="text-3xl font-black mb-4">SmartPrep Assessment Report</h1>
@@ -206,7 +207,7 @@ function App() {
       )}
 
       {/* SIDEBAR */}
-      <aside className={`bg-white border-r border-slate-200 flex flex-col transition-all duration-500 print:hidden ${isSidebarOpen ? 'w-72' : 'w-24'}`}>
+      <aside className={`bg-white/90 backdrop-blur-md border-r border-slate-200 flex flex-col transition-all duration-500 print:hidden ${isSidebarOpen ? 'w-72' : 'w-24'}`}>
         <div className="p-8 flex items-center justify-between">
           {isSidebarOpen && <span className="font-extrabold text-2xl tracking-tighter text-slate-900">SmartPrep<span className="text-indigo-600">.</span></span>}
           <button onClick={() => setIsSidebarOpen(!isSidebarOpen)} className="text-slate-400 hover:text-indigo-600 p-2 rounded-xl bg-slate-50"><Menu size={20}/></button>
@@ -223,7 +224,7 @@ function App() {
         </div>
       </aside>
 
-      <main className="flex-1 overflow-y-auto p-12 print:hidden">
+      <main className="flex-1 overflow-y-auto p-12 print:hidden backdrop-blur-sm bg-slate-50/30">
         {view === 'dashboard' && (
           <div className="max-w-6xl mx-auto space-y-10 animate-in fade-in duration-700">
             <header className="flex justify-between items-end">
@@ -234,26 +235,26 @@ function App() {
             </header>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-               <div className="lg:col-span-2 bg-white p-8 rounded-[2rem] border border-slate-200 shadow-sm">
-                  <div className="flex justify-between items-center mb-8">
-                     <h3 className="font-bold text-slate-400 uppercase text-xs tracking-widest">Growth Analytics</h3>
-                     <div className="bg-indigo-50 text-indigo-600 px-3 py-1 rounded-full text-[10px] font-black uppercase">Live Data</div>
-                  </div>
-                  <div className="h-[250px]"><Line data={chartConfig} options={{ maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, max: 10, grid: { color: '#f1f5f9' } }, x: { grid: { display: false } } } }} /></div>
-               </div>
-               
-               <div className="bg-slate-900 rounded-[2rem] p-8 text-white flex flex-col justify-between shadow-xl relative overflow-hidden">
-                  <div className="relative z-10">
-                    <BrainCircuit size={48} className="text-indigo-400 mb-6 opacity-80"/>
-                    <h3 className="text-indigo-200 font-bold uppercase text-[10px] tracking-[0.2em] mb-2">Readiness Score</h3>
-                    <p className="text-6xl font-black italic">{readinessScore}<span className="text-2xl text-indigo-400">%</span></p>
-                  </div>
-                  <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-indigo-600 rounded-full blur-[80px] opacity-20"></div>
-                  <button onClick={() => setView('history')} className="relative z-10 w-full bg-white/10 hover:bg-white/20 py-4 rounded-2xl text-xs font-bold transition-all backdrop-blur-sm">View Full Report</button>
-               </div>
+                <div className="lg:col-span-2 bg-white/90 backdrop-blur-md p-8 rounded-[2rem] border border-slate-200 shadow-sm">
+                   <div className="flex justify-between items-center mb-8">
+                      <h3 className="font-bold text-slate-400 uppercase text-xs tracking-widest">Growth Analytics</h3>
+                      <div className="bg-indigo-50 text-indigo-600 px-3 py-1 rounded-full text-[10px] font-black uppercase">Live Data</div>
+                   </div>
+                   <div className="h-[250px]"><Line data={chartConfig} options={{ maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, max: 10, grid: { color: '#f1f5f9' } }, x: { grid: { display: false } } } }} /></div>
+                </div>
+                
+                <div className="bg-slate-900 rounded-[2rem] p-8 text-white flex flex-col justify-between shadow-xl relative overflow-hidden">
+                   <div className="relative z-10">
+                     <BrainCircuit size={48} className="text-indigo-400 mb-6 opacity-80"/>
+                     <h3 className="text-indigo-200 font-bold uppercase text-[10px] tracking-[0.2em] mb-2">Readiness Score</h3>
+                     <p className="text-6xl font-black italic">{readinessScore}<span className="text-2xl text-indigo-400">%</span></p>
+                   </div>
+                   <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-indigo-600 rounded-full blur-[80px] opacity-20"></div>
+                   <button onClick={() => setView('history')} className="relative z-10 w-full bg-white/10 hover:bg-white/20 py-4 rounded-2xl text-xs font-bold transition-all backdrop-blur-sm">View Full Report</button>
+                </div>
             </div>
 
-            <div className="bg-white p-10 rounded-[2.5rem] border border-slate-200 shadow-sm">
+            <div className="bg-white/90 backdrop-blur-md p-10 rounded-[2.5rem] border border-slate-200 shadow-sm">
                 <div className="flex items-center gap-3 mb-8">
                     <div className="w-10 h-10 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center"><Play size={20}/></div>
                     <h2 className="text-xl font-black text-slate-800">Start New Practice Session</h2>
@@ -264,7 +265,7 @@ function App() {
                             <span className="text-xs font-black uppercase text-slate-400 tracking-widest ml-1">Question Count: {numQuestions}</span>
                             <input type="range" min="5" max="30" step="5" value={numQuestions} onChange={(e) => setNumQuestions(e.target.value)} className="w-full h-2 bg-slate-100 rounded-lg accent-indigo-600 mt-4"/>
                         </label>
-                        <div className="p-8 rounded-3xl bg-slate-50 border border-slate-100">
+                        <div className="p-8 rounded-3xl bg-slate-50/50 border border-slate-100">
                             <h3 className="font-bold text-sm text-slate-700 mb-4 flex items-center gap-2"><Upload size={18} className="text-indigo-600"/> Interview via Resume</h3>
                             <input type="file" id="cv-upload" hidden onChange={onFileChange} accept=".pdf"/>
                             <div onClick={() => document.getElementById('cv-upload').click()} className="cursor-pointer py-4 px-6 bg-white rounded-xl border border-dashed border-slate-300 text-center text-xs font-bold text-slate-400">
@@ -274,7 +275,7 @@ function App() {
                         </div>
                     </div>
                     <div className="space-y-6">
-                        <div className="p-8 rounded-3xl bg-slate-50 border border-slate-100">
+                        <div className="p-8 rounded-3xl bg-slate-50/50 border border-slate-100">
                             <h3 className="font-bold text-sm text-slate-700 mb-4 flex items-center gap-2"><Sparkles size={18} className="text-emerald-500"/> Specific Topic Drill</h3>
                             <input type="text" placeholder="e.g. React, Python..." className="w-full p-4 rounded-xl border border-slate-200 text-sm font-medium outline-none mb-4" value={topic} onChange={(e) => setTopic(e.target.value)}/>
                             <button onClick={() => startInterview('topic')} className="w-full bg-slate-900 text-white py-4 rounded-xl font-black text-xs uppercase tracking-widest hover:bg-slate-800 transition-all">Launch Drill</button>
@@ -288,7 +289,7 @@ function App() {
         {view === 'interview' && (
           <div className="max-w-4xl mx-auto pb-20 animate-in slide-in-from-bottom-10 duration-500">
             {showAnalysis ? (
-              <div className="bg-white p-12 rounded-[3.5rem] border border-slate-200 shadow-2xl relative">
+              <div className="bg-white/95 backdrop-blur-xl p-12 rounded-[3.5rem] border border-slate-200 shadow-2xl relative">
                 <div className="flex justify-between items-start mb-12">
                   <div>
                     <h2 className="text-4xl font-black text-slate-900 tracking-tighter">Skill Assessment</h2>
@@ -324,12 +325,12 @@ function App() {
                   <div className="px-6 py-2 bg-indigo-600 text-white rounded-full text-[10px] font-black uppercase tracking-widest">Stage {currentStep + 1} of {questions.length}</div>
                   <button onClick={() => setView('dashboard')} className="text-slate-400 font-bold text-xs uppercase hover:text-rose-500 transition-all flex items-center gap-2"><XCircle size={18}/> Cancel</button>
                 </div>
-                <div className="bg-white p-12 rounded-[3.5rem] border border-slate-200 shadow-xl">
+                <div className="bg-white/95 backdrop-blur-xl p-12 rounded-[3.5rem] border border-slate-200 shadow-xl">
                   <h2 className="text-2xl font-black text-slate-900 mb-10 leading-tight">{questions[currentStep]}</h2>
                   {!evaluation ? (
                     <div className="space-y-6">
                       <div className="relative">
-                        <textarea className="w-full p-8 bg-slate-50 border-2 border-transparent rounded-[2.5rem] h-64 font-medium text-slate-700 outline-none focus:border-indigo-100 transition-all resize-none" placeholder="Type or speak response..." value={userAnswer} onChange={(e) => setUserAnswer(e.target.value)} />
+                        <textarea className="w-full p-8 bg-slate-50/50 border-2 border-transparent rounded-[2.5rem] h-64 font-medium text-slate-700 outline-none focus:border-indigo-100 transition-all resize-none" placeholder="Type or speak response..." value={userAnswer} onChange={(e) => setUserAnswer(e.target.value)} />
                         <button onClick={startSpeech} className={`absolute bottom-6 right-6 p-4 rounded-2xl ${isListening ? 'bg-rose-500 text-white animate-pulse' : 'bg-white text-indigo-600'}`}>
                           {isListening ? <Mic size={24}/> : <MicOff size={24}/>}
                         </button>
@@ -338,7 +339,7 @@ function App() {
                     </div>
                   ) : (
                     <div className="space-y-8 animate-in fade-in zoom-in-95 duration-500">
-                      <div className="flex items-center gap-6 p-6 bg-slate-50 rounded-3xl border border-slate-100">
+                      <div className="flex items-center gap-6 p-6 bg-slate-50/80 rounded-3xl border border-slate-100">
                         <div className={`p-4 rounded-2xl ${evaluation.score >= 7 ? 'bg-emerald-100 text-emerald-600' : 'bg-amber-100 text-amber-600'}`}><Award size={32}/></div>
                         <div><p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Score</p><p className="text-3xl font-black text-slate-900">{evaluation.score} <span className="text-lg text-slate-400">/ 10</span></p></div>
                       </div>
@@ -363,11 +364,11 @@ function App() {
             <h1 className="text-3xl font-black text-slate-900 tracking-tight">Session History</h1>
             <div className="grid gap-4">
               {history.length === 0 ? (
-                  <div className="bg-white p-20 rounded-[3rem] text-center border-2 border-dashed border-slate-100">
+                  <div className="bg-white/90 backdrop-blur-md p-20 rounded-[3rem] text-center border-2 border-dashed border-slate-100">
                       <Clock className="mx-auto text-slate-200 mb-4" size={48}/><p className="text-slate-400 font-bold uppercase text-xs">No sessions yet.</p>
                   </div>
               ) : history.map((h, i) => (
-                <div key={i} className="group bg-white p-8 rounded-3xl border border-slate-200 flex justify-between items-center hover:border-indigo-300 transition-all cursor-pointer">
+                <div key={i} className="group bg-white/90 backdrop-blur-md p-8 rounded-3xl border border-slate-200 flex justify-between items-center hover:border-indigo-300 transition-all cursor-pointer">
                   <div className="flex items-center gap-6">
                     <div className="w-14 h-14 bg-indigo-50 text-indigo-600 rounded-2xl flex items-center justify-center group-hover:bg-indigo-600 transition-all"><MessageSquare size={24}/></div>
                     <div><p className="font-extrabold text-slate-900 uppercase text-sm">{h.topic?.startsWith('RESUME_MODE') ? "Resume Analysis" : h.topic}</p><p className="text-[10px] font-bold text-slate-400 uppercase mt-1">{new Date(h.createdAt).toLocaleDateString()}</p></div>
@@ -386,7 +387,7 @@ function App() {
         {view === 'settings' && (
           <div className="max-w-2xl mx-auto">
             <h1 className="text-3xl font-black text-slate-900 tracking-tight mb-10">Settings</h1>
-            <div className="bg-white p-10 rounded-[3rem] border border-slate-200 shadow-sm">
+            <div className="bg-white/90 backdrop-blur-md p-10 rounded-[3rem] border border-slate-200 shadow-sm">
               <div className="flex items-center gap-3 mb-6"><Trash2 className="text-rose-500" size={20}/><h3 className="text-rose-500 font-black text-sm uppercase">Danger Zone</h3></div>
               <button onClick={async () => { if(window.confirm("Permanently delete everything?")){ await axios.delete(`${API_URL}/history/clear`, authHeader); setHistory([]); alert("System wiped."); } }} className="w-full bg-rose-50 text-rose-600 py-5 rounded-2xl font-black text-xs uppercase tracking-widest border border-rose-100 hover:bg-rose-600 hover:text-white transition-all">Clear All User Data</button>
             </div>
