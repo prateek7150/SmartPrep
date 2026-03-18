@@ -407,7 +407,8 @@ function AuthScreen({ backgroundImage }) {
     setAuthLoading(true);
     try {
       const endpoint = isLogin ? 'login' : 'register';
-      const res = await axios.post(`http://localhost:5000/api/auth/${endpoint}`, data);
+      // ✅ FIXED: Using dynamic API_URL instead of localhost
+      const res = await axios.post(`${API_URL.split('/interview')[0]}/auth/${endpoint}`, data);
       setToken(res.data.token);
       setUser(res.data.user);
     } catch (err) { alert("Credentials not recognized."); }
