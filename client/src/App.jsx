@@ -21,11 +21,13 @@ ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, T
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.mjs`;
 
-// Replace your old API_URL line with this:
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api/interview";
+// --- CRITICAL DYNAMIC URL CONFIG ---
+const VERCEL_URL = import.meta.env.VITE_API_URL;
+const API_URL = VERCEL_URL ? `${VERCEL_URL}/api/interview` : "http://localhost:5000/api/interview";
+const AUTH_URL = VERCEL_URL ? `${VERCEL_URL}/api/auth` : "http://localhost:5000/api/auth";
 
 function App() {
-  const { token, logout, user } = useContext(AuthContext);
+  const { token, logout, user, setToken, setUser } = useContext(AuthContext);
   
   const [view, setView] = useState('dashboard'); 
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -46,9 +48,10 @@ function App() {
   const [analysisData, setAnalysisData] = useState(null);
   const [showAnalysis, setShowAnalysis] = useState(false);
 
-  const authHeader = { headers: { Authorization: `Bearer ${token}` } };
+  const authHeader = useMemo(() => ({
+    headers: { Authorization: `Bearer ${token}` }
+  }), [token]);
 
-  // --- THE FIX: FORCED PRINT TRIGGER ---
   const downloadReport = () => {
     window.print();
   };
@@ -66,13 +69,15 @@ function App() {
     recognition.start();
   };
 
-  useEffect(() => { if (token) fetchStats(); }, [token]);
+  useEffect(() => { 
+    if (token) fetchStats(); 
+  }, [token]);
 
   const fetchStats = async () => {
     try {
       const res = await axios.get(`${API_URL}/history`, authHeader);
       setHistory(res.data);
-    } catch (err) { console.error(err); }
+    } catch (err) { console.error("Stats Fetch Error:", err); }
   };
 
   const startInterview = async (mode) => {
@@ -88,7 +93,7 @@ function App() {
       setUserAnswer('');
       setView('interview');
       setShowAnalysis(true);
-    } catch (err) { alert("Server is busy."); }
+    } catch (err) { alert("Interview generation failed. Check backend connection."); }
     finally { setLoading(false); }
   };
 
@@ -147,7 +152,6 @@ function App() {
     };
   }, [history]);
 
-  // FIXED CALCULATION
   const readinessScore = useMemo(() => {
     if (!history || history.length === 0) return 0;
     const allScores = history.flatMap(h => h.results?.map(r => r.score) || []);
@@ -156,17 +160,24 @@ function App() {
     return ((sum / allScores.length) * 10).toFixed(0);
   }, [history]);
 
-  if (!token) return <AuthScreen backgroundImage={backgroundImage}/>;
+  if (!token) {
+    return (
+      <AuthScreen 
+        backgroundImage={backgroundImage} 
+        AUTH_URL={AUTH_URL} 
+        setToken={setToken} 
+        setUser={setUser} 
+      />
+    );
+  }
 
   return (
     <div className="flex h-screen bg-[#F8FAFC] text-slate-900 font-sans overflow-hidden print:h-auto print:overflow-visible">
-      
-      {/* PRINT-ONLY REPORT CONTAINER (Hidden in Browser, Visible to Printer) */}
+      {/* Hidden Print Report */}
       <div className="hidden print:block print:p-10 print:w-full print:bg-white">
           <h1 className="text-3xl font-black mb-4">SmartPrep Assessment Report</h1>
           <p className="text-slate-500 mb-8 font-bold">Generated for: {user?.name} on {new Date().toLocaleDateString()}</p>
           <hr className="mb-8"/>
-          
           <div className="mb-10">
               <h2 className="text-xl font-bold mb-4 uppercase text-indigo-600">Performance Summary</h2>
               <div className="p-6 bg-slate-50 rounded-2xl border border-slate-200">
@@ -174,7 +185,6 @@ function App() {
                   <p className="text-slate-500 mt-2 italic">Calculated across {history.length} practice sessions.</p>
               </div>
           </div>
-
           {analysisData && (
               <div className="space-y-6">
                   <h2 className="text-xl font-bold uppercase text-indigo-600">AI Skill Analysis</h2>
@@ -214,7 +224,6 @@ function App() {
       </aside>
 
       <main className="flex-1 overflow-y-auto p-12 print:hidden">
-        
         {view === 'dashboard' && (
           <div className="max-w-6xl mx-auto space-y-10 animate-in fade-in duration-700">
             <header className="flex justify-between items-end">
@@ -396,8 +405,7 @@ function SidebarItem({ active, icon, label, onClick, isOpen }) {
   );
 }
 
-function AuthScreen({ backgroundImage }) {
-  const { setToken, setUser } = useContext(AuthContext);
+function AuthScreen({ backgroundImage, AUTH_URL, setToken, setUser }) {
   const [isLogin, setIsLogin] = useState(true);
   const [authLoading, setAuthLoading] = useState(false);
   const [data, setData] = useState({ name: '', email: '', password: '' });
@@ -407,11 +415,13 @@ function AuthScreen({ backgroundImage }) {
     setAuthLoading(true);
     try {
       const endpoint = isLogin ? 'login' : 'register';
-      // ✅ FIXED: Using dynamic API_URL instead of localhost
-      const res = await axios.post(`${API_URL.split('/interview')[0]}/auth/${endpoint}`, data);
+      const res = await axios.post(`${AUTH_URL}/${endpoint}`, data);
       setToken(res.data.token);
       setUser(res.data.user);
-    } catch (err) { alert("Credentials not recognized."); }
+    } catch (err) { 
+      console.error("Auth Error:", err);
+      alert(err.response?.data?.message || "Authentication failed."); 
+    }
     finally { setAuthLoading(false); }
   };
 
@@ -439,7 +449,7 @@ function AuthScreen({ backgroundImage }) {
             <input type="password" placeholder="••••••••" required className="w-full p-5 rounded-2xl bg-slate-50 border border-slate-100 text-sm focus:ring-2 ring-indigo-100 outline-none transition-all" onChange={e => setData({...data, password: e.target.value})}/>
           </div>
           <button className="w-full bg-slate-900 text-white py-6 rounded-2xl font-black text-xs uppercase tracking-[0.2em] shadow-xl hover:bg-slate-800 transition-all flex items-center justify-center">
-            {authLoading ? <RefreshCcw className="animate-spin"/> : (isLogin ? "Sign In" : "Register Here !")}
+            {authLoading ? <RefreshCcw className="animate-spin"/> : (isLogin ? "Sign In" : "Create Account")}
           </button>
         </form>
         <button onClick={() => setIsLogin(!isLogin)} className="w-full mt-8 text-[10px] font-black text-slate-400 uppercase text-center tracking-widest hover:text-indigo-600 transition-all">
