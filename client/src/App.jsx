@@ -1,5 +1,3 @@
-I do not have any dashboard.jsx everything is included in App.jsx only
-
 import React, { useState, useContext, useEffect, useMemo } from 'react';
 import axios from 'axios';
 import * as pdfjsLib from 'pdfjs-dist';
